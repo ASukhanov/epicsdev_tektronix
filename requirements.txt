@@ -1,0 +1,4 @@
+epicsdev>=2.1.0
+pyvisa>=1.13.0
+pyvisa-py>=0.7.0
+numpy>=1.21.0
