@@ -1,0 +1,10 @@
+# Required dependencies for epicsdev_tektronix
+numpy>=1.20.0
+pyvisa>=1.11.0
+pyvisa-py>=0.5.0
+epicsdev>=2.1.0
+p4p>=4.1.0
+
+# Optional dependencies for GUI and plotting
+# pypeto  # For control GUI
+# pvplot  # For waveform plotting
