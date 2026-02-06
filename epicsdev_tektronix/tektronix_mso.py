@@ -35,7 +35,7 @@ class TektronixMSO:
         """Initialize oscilloscope connection.
         
         Args:
-            resource_address: VISA resource string (e.g., 'TCPIP::192.168.1.100::INST R')
+            resource_address: VISA resource string (e.g., 'TCPIP::192.168.1.100::INSTR')
             simulate: If True, run in simulation mode without hardware
         """
         self.simulate = simulate
