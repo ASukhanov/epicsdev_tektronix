@@ -16,6 +16,15 @@ from epicsdev.epicsdev import  Server, SPV, init_epicsdev, sleep,\
     serverState, set_server, publish, pvobj, pvv,\
     printi, printe, printw, printv, printvv
 
+#``````````````````Constants
+Threadlock = threading.Lock()
+OK = 0
+NotOK = -1
+IF_CHANGED =True
+ElapsedTime = {}
+NDIVSX = 10# number of horizontal divisions of the scope display
+NDIVSY = 10# number of vertical divisions
+
 #``````````````````PVs defined here```````````````````````````````````````````
 def myPVDefs():
     """PV definitions"""
@@ -99,15 +108,6 @@ def myPVDefs():
             pvDefs.append(newpvdef)
     return pvDefs
 #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-#``````````````````Constants
-Threadlock = threading.Lock()
-OK = 0
-NotOK = -1
-IF_CHANGED =True
-ElapsedTime = {}
-NDIVSX = 10# number of horizontal divisions of the scope display
-NDIVSY = 10# number of vertical divisions
-#,,,,,,,,,,,,,,,,,,
 class C_():
     """Namespace for module properties"""
     scope = None
