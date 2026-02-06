@@ -400,7 +400,7 @@ def trigger_is_detected():
 
     # trigger detected
     C_.numacq += 1
-    C_.trigtime = time.time()
+    C_.trigTime = time.time()
     ElapsedTime['trigger_detection'] = round(ts - timer(),6)
     printv(f'Trigger detected {C_.numacq}')
     return True
@@ -453,7 +453,7 @@ def acquire_waveforms():
             publish(f'c{ch:02}Waveform', v, t=C_.trigTime)
             publish(f'c{ch:02}Peak2Peak',
                 (v.max() - v.min()),
-                t = C_.trigtime)
+                t = C_.trigTime)
         except visa.errors.VisaIOError as e:
             printe(f'Visa exception in {operation} for {ch}:{e}')
             break
