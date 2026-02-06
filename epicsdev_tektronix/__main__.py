@@ -1,6 +1,6 @@
 """EPICS PVAccess server for Tektronix MSO oscilloscopes using epicsdev module."""
 # pylint: disable=invalid-name
-__version__= 'v1.0.0 26-02-06'# Initial version based on epicsdev_rigol_scope
+__version__ = 'v1.0.0 26-02-06'# Initial version based on epicsdev_rigol_scope
 
 import sys
 import time
