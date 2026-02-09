@@ -70,7 +70,7 @@ string or device:parameter and the value is dictionary of the features.
         host = '130.199.41.111'
         #scopeWWW = {'WWW':{'launch':f'firefox http://{host}/Tektronix/#/client/c/   Tek%20e*Scope',
         #    **lColor, **ButtonFont, **span(1,2)}}
-        PaneP2P = ' '.join([f'c{i+1:02}Peak2Peak' for i in range(channels)])
+        PaneP2P = ' '.join([f'c{i+1:02d}Mean c{i+1:02}Peak2Peak' for i in range(channels)])
         PaneWF = ' '.join([f'c{i+1:02}Waveform' for i in range(channels)])
         Plot = {'Plot':{'launch':f'{PyPath} pvplot -aV:{instance} -#0"{PaneP2P}" -#1"{PaneWF}" -#2"{PaneT}"',
             **lColor, **ButtonFont}}
@@ -82,7 +82,7 @@ string or device:parameter and the value is dictionary of the features.
 #['State:', D+'server', 'Recall:', D+'setup',_,'verbose:',D+'verbose'],
 #['Status:', {D+'status': span(6,1)}],
 #['Polling Interval:', D+'polling',_,_,_,Plot,_],#scopeWWW],
-['Device:',D, D+'server', D+'version', 'host:',D+'host',_],
+['Device:',D, D+'server', D+'version', D+'host', {D+'dateTime':span(2,1)}],
 ['Status:', {D+'status': span(8,1)}],
 ['Cycle time:',D+'cycleTime', 'Sleep:',D+'sleep', 'Cycle:',D+'cycle', Plot],
 #'', {D+'ReadSetting':
@@ -105,6 +105,7 @@ string or device:parameter and the value is dictionary of the features.
 ['On/Off:']+ChLine('OnOff'),
 #['Delay:']+ChLine('DelayFromTriggerM'),
 #['Waveform:']+ChLine('WaveforM'),
+['Mean:']+ChLine('Mean'),
 ['Peak2Peak:']+ChLine('Peak2Peak'),
 #[''],
 # ["Trigger",D+'trigSourceS',D+'trigLevelS',D+'trigSlopeS',D+'trigModeS'],
@@ -117,6 +118,6 @@ string or device:parameter and the value is dictionary of the features.
 [LYRow,'',{'For Experts only!':{**span(6,1),**font(14)}}],
 [LYRow,'Scope command:', {D+'instrCmdS':span(2,1)},_,{D+'instrCmdR':span(4,1)}],
 [LYRow,'Special commands', {D+'instrCtrl':span(2,1)},_,_,_,_,_,],
-[LYRow,'Timing:',{D+'timing':span(6,1)}],
+[LYRow,'Cycle time:',D+'cycleTime', 'Timing:',{D+'timing':span(6,1)}],
 #[LYRow,'ActOnEvent',D+'actOnEvent','AOE_Limit',D+'aOE_Limit',_,_,_],
 ]
