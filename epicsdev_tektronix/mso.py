@@ -1,10 +1,8 @@
 """EPICS PVAccess server for Tektronix MSO oscilloscopes using epicsdev module."""
 # pylint: disable=invalid-name
-__version__ = 'v1.0.1 26-02-08'# 
+__version__ = 'v1.0.2 26-02-09'# Improved error handling, added horzMode PV, added timing measurements, added support for more trigger types, added support for more channels, added support for saving/recalling setup, added more comments and documentation.
 # Note, visa INSTR works more reliably than SOCKET, but waveform acquisition is ~10 times slower
-#TODO: query('WFMOutpre...) are slowers than waveform acquisition. It maks sens to do them less frequently
-#TODO check *IDN? 
-
+#TODO: Timing does not match for 0.3 s: cycleTime=2.0, acquire_wf=0.7, sleep=1.0
 import sys
 import time
 from time import perf_counter as timer
@@ -16,7 +14,7 @@ import pyvisa as visa
 from pyvisa.errors import VisaIOError
 
 from epicsdev.epicsdev import  Server, SPV, init_epicsdev, sleep,\
-    serverState, set_server, publish, pvobj, pvv,\
+    serverState, set_server, publish, pvv,\
     printi, printe, printw, printv, printvv
 
 #``````````````````Constants
@@ -36,28 +34,30 @@ def myPVDefs():
     pvDefs = [
 # instruments's PVs
 ['setup', 'Save/recall instrument state to/from latest or operational setup',
-    SPV(['Setup','Save latest','Save oper','Recall latest','Recall oper'],'WD'),
-    {SET:set_setup}],
+    SPV(['Setup','Save latest','Save oper','Recall latest','Recall oper'],'WD'),{
+    SET:set_setup}],
 ['visaResource', 'VISA resource to access the device', SPV(pargs.resource,'R'), {}],
 ['dateTime',    'Scope`s date & time', SPV('N/A'), {}],
 ['acqCount',    'Number of acquisition recorded', SPV(0), {}],
-['scopeAcqCount',  'Acquisition count of the scope', SPV(0),
-    {SCPI:'ACQuire:NUMACq'}],
+['scopeAcqCount',  'Acquisition count of the scope', SPV(0),{
+    SCPI:'ACQuire:NUMACq'}],
 ['lostTrigs',   'Number of triggers lost',  SPV(0), {}],
 ['instrCtrl',   'Scope control commands',
     SPV('*IDN?,*RST,*CLS,*ESR?,*OPC?,*STB?'.split(','),'WD'), {}],
-['instrCmdS',   'Execute a scope command. Features: RWE',  SPV('*IDN?','W'),
-    {SET:set_instrCmdS}],
+['instrCmdS',   'Execute a scope command. Features: RWE',  SPV('*IDN?','W'),{
+    SET:set_instrCmdS}],
 ['instrCmdR',   'Response of the instrCmdS',  SPV(''), {}],
-['actOnEvent',  'Enables the saving waveforms on trigger', SPV(['0','1'],'WD'),
-    {SCPI:'ACTONEVent:ENable'}],
-['aOE_Limit',   'Limit of Action On Event saves', SPV(80,'W'),
-    {SCPI:'ACTONEVent:LIMITCount'}],
+['actOnEvent',  'Enables the saving waveforms on trigger', SPV(['0','1'],'WD'),{
+    SCPI:'ACTONEVent:ENable', SET:set_scpi}],
+['aOE_Limit',   'Limit of Action On Event saves', SPV(80,'W'),{
+    SCPI:'ACTONEVent:LIMITCount', SET:set_scpi}],
 #``````````````````Horizontal PVs
-['recLengthS',   'Number of points per waveform',
-    SPV(1000.,'W'), {SCPI:'HORizontal:RECOrdlength'}],
-['recLengthR',   'Number of points per waveform read', SPV(0.),
-    {SCPI:'HORizontal:RECOrdlength'}],
+['horzMode',    'Horizontal mode', SPV(['AUTO','MANUAL'],'WD'),{
+    SCPI:'HORizontal:MODE', SET:set_scpi}],
+['recLengthS',  'Number of points per waveform', SPV(1000.,'W'),{
+    SCPI:'HORizontal:RECOrdlength', SET:set_scpi}],
+['recLengthR',  'Number of points per waveform read', SPV(0.),{
+    SCPI:'HORizontal:RECOrdlength'}],
 ['samplingRate', 'Sampling Rate',  SPV(0.), {U:'Hz',
     SCPI:'HORizontal:SAMPLERate'}],
 ['timePerDiv', f'Horizontal scale (1/{NDIVSX} of full scale)', SPV(2.e-6,'W'), {U:'S/du',
@@ -68,40 +68,40 @@ def myPVDefs():
 ['trigger',     'Click to force trigger event to occur',
     SPV(['Trigger','Force!'],'WD'), {SET:set_trigger}],
 ['trigType',   'Trigger type',
-    SPV(['EDGE','WIDTH','TIMEOUT','RUNT','WINDOW','LOGIC','SETHOLD','TRANSITION','BUS'],'WD'),
-    {SCPI:'TRIGger:A:TYPE',SET:set_scpi}],
-['trigCoupling',   'Trigger coupling', SPV(['DC','HFREJ','LFREJ','NOISEREJ'],'D'),
-    {SCPI:'TRIGger:A:EDGE:COUPling'}],
-['trigState',   'Current trigger status', SPV('?'),
-    {SCPI:'TRIGger:STATE'}],
-['trigMode',   'Trigger mode', SPV(['AUTO','NORMAL'],'WD'),
-    {SCPI:'TRIGger:A:MODe',SET:set_scpi}],
+    SPV(['EDGE','WIDTH','TIMEOUT','RUNT','WINDOW','LOGIC','SETHOLD','TRANSITION','BUS'],'WD'),{
+    SCPI:'TRIGger:A:TYPE',SET:set_scpi}],
+['trigCoupling',   'Trigger coupling', SPV(['DC','HFREJ','LFREJ','NOISEREJ'],'D'),{
+    SCPI:'TRIGger:A:EDGE:COUPling'}],
+['trigState',   'Current trigger status', SPV('?'),{
+    SCPI:'TRIGger:STATE'}],
+['trigMode',   'Trigger mode', SPV(['AUTO','NORMAL'],'WD'),{
+    SCPI:'TRIGger:A:MODe',SET:set_scpi}],
 ['trigDelay',   'Horizontal delay time', SPV(0.), {U:'S',
     SCPI:'HORizontal:DELay:TIMe'}],
 ['trigSource', 'Trigger source',
-    SPV(pargs.channelList+['LINE','AUX'],'WD'),
-    {SCPI:'TRIGger:A:EDGE:SOUrce',SET:set_scpi}],
-['trigSlope',  'Trigger slope', SPV(['RISE','FALL','EITHER'],'WD'),
-    {SCPI:'TRIGger:A:EDGE:SLOpe',SET:set_scpi}],
+    SPV(pargs.channelList+['LINE','AUX'],'WD'),{
+    SCPI:'TRIGger:A:EDGE:SOUrce',SET:set_scpi}],
+['trigSlope',  'Trigger slope', SPV(['RISE','FALL','EITHER'],'WD'),{
+    SCPI:'TRIGger:A:EDGE:SLOpe',SET:set_scpi}],
 ['trigLevel', 'Trigger level', SPV(0.,'W'), {U:'V',SET:set_trigLevel}],
 #``````````````````Auxiliary PVs
-['timing',  'Performance timing', SPV([0.]), {U:'S'}],
+['timing',  'Performance timing: trigger,waveforms,preamble,query,publish', SPV([0.]), {U:'S'}],
     ]
 
     #``````````````Templates for channel-related PVs.
     # The <n> in the name will be replaced with channel number.
     # Important: SPV cannot be used in this list!
     ChannelTemplates = [
-['c<n>OnOff', 'Enable/disable channel', (['1','0'],'WD'),{}], 
-#    {SET:set_scpi, SCPI:'DISplay:WAVEView1:CH<n>:STATE'}], #for Rigol:SCPI:'CH<n>:STATE
-['c<n>Coupling', 'Channel coupling', (['DC','AC','DCREJ'],'WD'), 
-    {SCPI:'CH<n>:COUPling'}],
+['c<n>OnOff', 'Enable/disable channel', (['1','0'],'WD'),{
+    SCPI:'DISplay:WAVEView1:CH<n>:STATE', SET:set_scpi}], #for Rigol:SCPI:'CH<n>:STATE
+['c<n>Coupling', 'Channel coupling', (['DC','AC','DCREJ'],'WD'),{
+    SCPI:'CH<n>:COUPling', SET:set_scpi}],
 ['c<n>VoltsPerDiv',  'Vertical scale',  (1E-3,'W'), {U:'V/du',
-    SCPI:'CH<n>:SCAle', LL:500E-6, LH:10.}],
-['c<n>VoltOffset',  'Vertical offset',  (0.,), {U:'V'}],
-#    SCPI:'CH<n>:OFFSet'}],
+    SCPI:'CH<n>:SCAle', SET:set_scpi, LL:500E-6, LH:10.}],
+['c<n>VoltOffset',  'Vertical offset',  (0.,'W'), {U:'V',
+    SCPI:'CH<n>:OFFSet', SET:set_scpi, LL:-10., LH:10.}],
 ['c<n>Termination', 'Input termination', ('50.000','W'), {U:'Ohm',
-    SCPI:'CH<n>:TERmination'}],
+    SCPI:'CH<n>:TERmination', SET:set_scpi}],
 ['c<n>Waveform', 'Waveform array',           ([0.],), {U:'du'}],
 ['c<n>Mean',     'Mean of the waveform',     (0.,'A'), {U:'du'}],
 ['c<n>Peak2Peak','Peak-to-peak amplitude',   (0.,'A'), {U:'du',**alarm}],
@@ -130,8 +130,8 @@ class C_():
     previousScopeParametersQuery = ''
     channelsTriggered = []
     prevTscale = 0.
-    xorigin = 0.
-    xincrement = 0.
+    #xorigin = 0.
+    #xincrement = 0.
     npoints = 0
     ypars = None
     ymult = []
@@ -176,12 +176,14 @@ def set_setup(action_slot, *_):
     """setter for the setup PV"""
     if action_slot == 'Setup':
         return OK
-    action = str(action_slot)
-    #print(f'set_setup: {action}')
+    action,slot = str(action_slot).split()
+    filename = 'oper.set' if 'oper' in slot else 'latest.set'
+    print(f'set_setup: {action}')
     if action == 'Save':
         status = 'Setup was saved'
         with Threadlock:
-            C_.scope.write("SAVE:SETUP 'c:/latest.set'")
+            C_.scope.write(f"SAVE:SETUP 'c:/{filename}'")
+        printi(status)
     elif action == 'Recall':
         status = 'Setup was recalled'
         if serverState().startswith('Start'):
@@ -189,9 +191,12 @@ def set_setup(action_slot, *_):
             publish('setup','Setup')
             return NotOK
         with Threadlock:
-            C_.scope.write("RECAll:SETUp 'c:/latest.set'")
+            C_.scope.write(f"RECAll:SETUp 'c:/{filename}'")
+        printi(status)
+    else:
+        status = f'Wrong setup action: {action}'
+        printw(status)
     publish('setup','Setup')
-    publish('status', status)
     if action == 'Recall':
         adopt_local_setting()
     return OK
@@ -221,14 +226,16 @@ def set_recLengthS(value, *_):
 
 def set_scpi(value, pv, *_):
     """setter for SCPI-associated PVs"""
-    print(f'set_scpi({value},{pv.name})')
+    printv(f'set_scpi({value},{pv.name})')
     scpi = C_.scpi.get(pv.name,None)
     if scpi is None:
         printe(f'No SCPI defined for PV {pv.name}')
         return
     scpi = scpi.replace('<n>',pv.name[2])# replace <n> with channel number
-    print(f'set_scpi: {scpi} {value}')
     scpi += f' {value}' if pv.writable else '?'
+    if pv.name == 'recLengthS':
+        scpi = f':HORizontal:MODE MANUAL;:{scpi}'
+        print(f'setting recLengthS: {scpi}')
     printv(f'set_scpi command: {scpi}')
     reply = scopeCmd(scpi)
     if reply is not None:
@@ -252,14 +259,19 @@ def configure_scope():
     printi('configure_scope')
     with Threadlock:
         # Configure waveform data transfer for Tektronix
-        C_.scope.write("DATa:SOUrce CH1")
-        C_.scope.write("DATa:ENCdg RIBinary")  # Binary data format
-        C_.scope.write("DATa:WIDth 2")  # 2 bytes per data point
-        C_.scope.write("WFMOutpre:BYT_Nr 2")
+        C_.scope.write('HORizontal:DELay:MODe ON')
+        C_.scope.write('HORizontal:MODE MANual')
+        C_.scope.write('HORizontal:MODE:MANual:CONFIGure HORIZontalscale')
+        C_.scope.write((  ':WFMOUTPRE:ENCdg BINARY;'
+                        ':WFMOUTPRE:BN_Fmt RI;'
+                        ':WFMOUTPRE:BYT_NR 2;'
+                        f':WFMOUTPRE:BYT_Or LSB;'))
 
 def update_scopeParameters():
     """Update sensitive scope parameters"""
     #printi(f'Updating scope parameters for {pargs.channels} channels')
+    r = query(['horzMode'])
+    publish('horzMode', r[0], IF_CHANGED)
     for ich in range(1,pargs.channels+1):
         C_.scope.write(f'DATA:SOURCE CH{ich}')
         with Threadlock:
@@ -267,12 +279,14 @@ def update_scopeParameters():
         C_.ymult[ich] = float(r[0])
         C_.yoff[ich] = float(r[1])
         C_.yzero[ich] = float(r[2])
+        #print(f'Channel {ich}: YMULT={C_.ymult[ich]}, YOFF={C_.yoff[ich]}, YZERO={C_.yzero[ich]}')
 
     # Query horizontal parameters
     with Threadlock:
-        xincr = float(C_.scope.query("WFMOutpre:XINcr?"))
-        xzero = float(C_.scope.query("WFMOutpre:XZEro?"))
-        npoints = int(C_.scope.query("WFMOutpre:NR_Pt?"))
+        r = C_.scope.query('WFMOutpre:XINcr?;:WFMOutpre:XZEro?;:WFMOutpre:NR_Pt?').split(';')
+        xincr = float(r[0])
+        xzero = float(r[1])
+        npoints = int(r[2])
         
         # Query channel states
         ch_states = []
@@ -280,19 +294,19 @@ def update_scopeParameters():
             state = C_.scope.query(f"CH{ch}:STATE?")
             ch_states.append(state.strip())
     
-    r = f'{xzero};{xincr};{npoints};' + ';'.join(ch_states)
+    currentScopeParameters = f'{xincr:.6g};{npoints};' + ';'.join(ch_states)
     
-    if r != C_.previousScopeParametersQuery:
-        printi(f'Scope parameters changed: {r}')
-        C_.xorigin = xzero
-        C_.xincrement = xincr
+    if currentScopeParameters != C_.previousScopeParametersQuery:
+        printi(f'Scope parameters changed dx,n: {currentScopeParameters}')
+        xorigin = xzero
+        xincrement = xincr
         C_.npoints = npoints
-        taxis = np.arange(0, C_.npoints) * C_.xincrement + C_.xorigin
+        taxis = np.arange(0, C_.npoints) * xincrement + xorigin
         publish('tAxis', taxis)
         publish('recLengthR', C_.npoints, IF_CHANGED)
-        publish('timePerDiv', C_.npoints*C_.xincrement/NDIVSX, IF_CHANGED)
-        publish('samplingRate', 1./C_.xincrement, IF_CHANGED)
-    C_.previousScopeParametersQuery = r
+        publish('timePerDiv', C_.npoints*xincrement/NDIVSX, IF_CHANGED)
+        publish('samplingRate', 1./xincrement, IF_CHANGED)
+    C_.previousScopeParametersQuery = currentScopeParameters
 
 def init_visa():
     '''Init VISA interface to device'''
@@ -313,7 +327,7 @@ def init_visa():
         printe(f'Exception: Could not open resource {resourceName}: {e}')
         sys.exit(1)
     #C_.scope.set_visa_attribute( visa.constants.VI_ATTR_TERMCHAR_EN, True)
-    C_.scope.timeout = 2000 # ms
+    C_.scope.timeout = 5000 # ms
     #C_.scope.encoding = 'latin_1'
     C_.scope.read_termination = '\n'
     C_.scope.write_termination = '\n'
@@ -350,9 +364,9 @@ def handle_exception(where):
     #print('handle_exception',sys.exc_info())
     exceptionText = str(sys.exc_info()[1])
     tokens = exceptionText.split()
-    msg = 'ERR:'+tokens[0] if tokens[0] == 'VI_ERROR_TMO' else exceptionText
+    msg = tokens[0] if tokens[0] == 'VI_ERROR_TMO' else exceptionText
     msg = msg+': '+where
-    printe(msg)
+    printw(msg)
     with Threadlock:
         C_.scope.write('*CLS')
     return -1
@@ -379,8 +393,9 @@ def adopt_local_setting():
         with Threadlock:
             value = C_.scope.query(trigLevelCmd()+'?')
         publish('trigLevel', value, IF_CHANGED)
-    except visa.errors.VisaIOError as e:
-        printe('VisaIOError in adopt_local_setting:'+str(e))
+    except:
+        handle_exception('in adopt_local_setting')
+        return
     if nothingChanged:
         printi('Local setting did not change.')
 
@@ -439,7 +454,7 @@ def trigger_is_detected():
          'trigState':trigstate}
     for pvname,value in d.items():
         publish(pvname, value, IF_CHANGED, t=C_.trigTime)
-    ElapsedTime['trigger_detection'] = round(ts - timer(),6)
+    ElapsedTime['trigger_detection'] = round(timer()-ts,6)
     printv(f'Trigger detected {C_.numacq}')
     return True
 
@@ -480,13 +495,12 @@ def acquire_waveforms():
                 # yoff = float(C_.scope.query('WFMOutpre:YOFf?'))
                 # yzero = float(C_.scope.query('WFMOutpre:YZEro?'))
             dt = timer() - ts
-            printvv(f'aw preamble{ch}: ymult={C_.ymult[ch]}, yoff={C_.yoff[ch]}, yzero={C_.yzero[ch]}, dt: {dt}')
-            ElapsedTime['preamble'] -= dt
+            ts = timer()
+            #printvv(f'aw preamble{ch}: ymult={C_.ymult[ch]}, yoff={C_.yoff[ch]}, yzero={C_.yzero[ch]}, dt: {dt}')
+            ElapsedTime['preamble'] += dt
 
             # acquire the waveform
             operation = 'getting waveform'
-            ts = timer()
-
             # with Threadlock: This is 4 times longer than the query_binary_values
             #     C_.scope.write('CURVe?')
             #     # Read binary data
@@ -497,7 +511,6 @@ def acquire_waveforms():
             #     header_len = 2 + int(chr(waveform[1]))
             #     data_bytes = waveform[header_len:-1]  # Skip header and terminator
             #     waveform_data = np.frombuffer(data_bytes, dtype=np.int16)
-
             try:
                 with Threadlock:
                     bin_wave = C_.scope.query_binary_values('curve?',
@@ -506,8 +519,8 @@ def acquire_waveforms():
             except Exception as e:
                 printe(f'in query_binary_values: {e}')
                 break
-
-            ElapsedTime['query_wf'] -= timer() - ts
+            ElapsedTime['query_wf'] += timer() - ts
+            ts = timer()
 
             # Convert to vertical divisions
             #v = (waveform_data - yoff) * ymult + yzero
@@ -515,7 +528,6 @@ def acquire_waveforms():
             v = v/pvv(f'c{ch:02}VoltsPerDiv')
 
             # publish
-            ts = timer()
             operation = 'publishing'
             publish(f'c{ch:02}Waveform', v, t=C_.trigTime)
             publish(f'c{ch:02}Peak2Peak', np.ptp(v), t=C_.trigTime)
@@ -525,9 +537,8 @@ def acquire_waveforms():
             break
         except Exception as e:
             printe(f'Exception in processing channel {ch}: {e}')
-
-        ElapsedTime['publish_wf'] -= timer() - ts
-    ElapsedTime['acquire_wf'] -= timer()
+        ElapsedTime['publish_wf'] += timer() - ts
+    ElapsedTime['acquire_wf'] = timer() - ElapsedTime['acquire_wf']
     printvv(f'elapsedTime: {ElapsedTime}')
 
 def make_readSettingQuery():
@@ -574,24 +585,22 @@ def init():
 def periodicUpdate():
     """Called for infrequent updates"""
     printvv(f'periodicUpdate')
-    update_scopeParameters()
     try:
-        with Threadlock:
-            r = C_.scope.query(':ACTONEVent:ENable?;:DATE?;:TIMe?').split(';')
-            # the dateTime is here, because it is dual command
-    except visa.errors.VisaIOError as e:
-        printe(f'Exception in query for periodicUpdate: {e}')
-        return
+        update_scopeParameters()
+    except:
+        handle_exception('in update_scopeParameters')
+    with Threadlock:
+        r = C_.scope.query(':ACTONEVent:ENable?;:DATE?;:TIMe?').split(';')
+        # the dateTime is here, because it is dual command
     dt = ' '.join(r[1:3]).replace('"','')
     #print(f'dateTime: {dt}, {r}')
     publish('dateTime', dt)
     publish('scopeAcqCount', C_.numacq, IF_CHANGED)
     publish('lostTrigs', C_.triggersLost, IF_CHANGED)
     publish('actOnEvent', r[0], IF_CHANGED)
-    ##print(f'ElapsedTime: {ElapsedTime}')
     if 'STOP' in str(pvv('trigState')).upper():
         printe('Acquisition is stopped')
-    publish('timing', [(round(-i,6)) for i in ElapsedTime.values()])
+    publish('timing', [(round(i,6)) for i in ElapsedTime.values()])
 
 def poll():
     """Example of polling function"""
@@ -611,7 +620,7 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--index', default='0', help=
     'Device index, the PV name will be <device><index>:') 
     parser.add_argument('-r', '--resource', default='TCPIP::192.168.1.100::5025::SOCKET', help=
-    'Resource string to access the device, e.g., TCPIP::192.168.1.100::INSTR')
+    'Resource string to access the device, e.g., TCPIP::192.168.1.100::INSTR. Note, the INSTR is more reliable, SOCKET is faster for long waveforms')
     parser.add_argument('-v', '--verbose', action='count', default=0, help=
     'Show more log messages (-vv: show even more)') 
     pargs = parser.parse_args()
