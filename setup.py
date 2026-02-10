@@ -4,12 +4,12 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with open("requirements.txt", "r", encoding="utf-8") as fh:
-    requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
+#with open("requirements.txt", "r", encoding="utf-8") as fh:
+#    requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
     name="epicsdev_tektronix",
-    version="1.0.0",
+    version="1.0.2",
     author="Andrey Sukhanov",
     author_email="",
     description="EPICS PVAccess server for Tektronix MSO oscilloscopes",
@@ -31,7 +31,7 @@ setup(
         "Topic :: System :: Hardware :: Hardware Drivers",
     ],
     python_requires=">=3.7",
-    install_requires=requirements,
+    #install_requires=requirements,
     keywords="epics oscilloscope tektronix mso pvaccess scpi visa",
     project_urls={
         "Bug Reports": "https://github.com/ASukhanov/epicsdev_tektronix/issues",
