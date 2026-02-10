@@ -14,7 +14,7 @@ def slider(minValue,maxValue):
     """Definition of the GUI element: horizontal slider with flexible range"""
     return {'widget':'hslider','opLimits':[minValue,maxValue],'span':[2,1]}
 
-LargeFont = {'color':'light gray', **font(18), 'fgColor':'dark green'}
+LargeFont = {'color':'light gray', **font(16), 'fgColor':'dark green'}
 ButtonFont = {'font':['Open Sans Extrabold',14]}# Comic Sans MS
 # Attributes for gray row, it should be in the first cell:
 #GrayRow = {'ATTRIBUTES':{'color':'light gray', **font(12)}}
@@ -72,7 +72,7 @@ string or device:parameter and the value is dictionary of the features.
         #    **lColor, **ButtonFont, **span(1,2)}}
         PaneP2P = ' '.join([f'c{i+1:02d}Mean c{i+1:02}Peak2Peak' for i in range(channels)])
         PaneWF = ' '.join([f'c{i+1:02}Waveform' for i in range(channels)])
-        Plot = {'Plot':{'launch':f'{PyPath} pvplot -aV:{instance} -#0"{PaneP2P}" -#1"{PaneWF}" -#2"{PaneT}"',
+        Plot = {'Plot':{'launch':f'{PyPath} pvplot -Y-5:5 -aV:{instance} -#0"{PaneP2P}" -#1"{PaneWF}" -#2"{PaneT}"',
             **lColor, **ButtonFont}}
         print(f'Plot command: {Plot}')
 
@@ -82,7 +82,8 @@ string or device:parameter and the value is dictionary of the features.
 #['State:', D+'server', 'Recall:', D+'setup',_,'verbose:',D+'verbose'],
 #['Status:', {D+'status': span(6,1)}],
 #['Polling Interval:', D+'polling',_,_,_,Plot,_],#scopeWWW],
-['Device:',D, D+'server', D+'version', D+'host', {D+'dateTime':span(2,1)}],
+['Device:',D,_, D+'version', D+'host', {D+'dateTime':span(2,1)}],
+[{D+'server':LargeFont},_,'Save/Recall:',D+'setup',_,_,_],
 ['Status:', {D+'status': span(8,1)}],
 ['Cycle time:',D+'cycleTime', 'Sleep:',D+'sleep', 'Cycle:',D+'cycle', Plot],
 #'', {D+'ReadSetting':
@@ -91,7 +92,7 @@ string or device:parameter and the value is dictionary of the features.
   'Acquisitions:',D+'scopeAcqCount',_], 
 ['Time/Div:', {D+'timePerDiv':span(2,1)},_,'recLength:', D+'recLengthS',
   D+'recLengthR',_],
-['SamplingRate:', {D+'samplingRate':span(2,1)},_,_,_,_,_],
+['SamplingRate:', {D+'samplingRate':span(2,1)},_, 'HorzMode:',D+'horzMode',_,_],
 #['Trigger:', D+'trigSourceS', D+'trigCouplingS', D+'trigSlopeS', 'level:', D+'trigLevelS', 'delay:', {D+'trigDelay':span(2,1)},''],
 ['Trigger state:',D+'trigState','   trigMode:',D+'trigMode',
   'TrigLevel','TrigDelay',_],
@@ -118,6 +119,6 @@ string or device:parameter and the value is dictionary of the features.
 [LYRow,'',{'For Experts only!':{**span(6,1),**font(14)}}],
 [LYRow,'Scope command:', {D+'instrCmdS':span(2,1)},_,{D+'instrCmdR':span(4,1)}],
 [LYRow,'Special commands', {D+'instrCtrl':span(2,1)},_,_,_,_,_,],
-[LYRow,'Cycle time:',D+'cycleTime', 'Timing:',{D+'timing':span(6,1)}],
+[LYRow,'Timing:',{D+'timing':span(6,1)}],
 #[LYRow,'ActOnEvent',D+'actOnEvent','AOE_Limit',D+'aOE_Limit',_,_,_],
 ]
