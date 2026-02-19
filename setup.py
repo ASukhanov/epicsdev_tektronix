@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="epicsdev_tektronix",
-    version="1.0.2",
+    version="1.0.3",
     author="Andrey Sukhanov",
     author_email="",
     description="EPICS PVAccess server for Tektronix MSO oscilloscopes",
