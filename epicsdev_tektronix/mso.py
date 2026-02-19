@@ -1,6 +1,6 @@
 """EPICS PVAccess server for Tektronix MSO oscilloscopes using epicsdev module."""
 # pylint: disable=invalid-name
-__version__ = 'v1.0.2 26-02-09'# Improved error handling, added horzMode PV, added timing measurements, added support for more trigger types, added support for more channels, added support for saving/recalling setup, added more comments and documentation.
+__version__ = 'v1.0.3 26-02-13'# cleanup
 # Note, visa INSTR works more reliably than SOCKET, but waveform acquisition is ~10 times slower
 #TODO: Timing does not match for 0.3 s: cycleTime=2.0, acquire_wf=0.7, sleep=1.0
 import sys
@@ -122,18 +122,14 @@ class C_():
     setterMap = {}
     PvDefs = []
     readSettingQuery = None
-    cyclesSinceUpdate = 0
     exceptionCount = {}
     numacq = 0
     triggersLost = 0
     trigTime = 0
     previousScopeParametersQuery = ''
     channelsTriggered = []
-    prevTscale = 0.
-    #xorigin = 0.
-    #xincrement = 0.
     npoints = 0
-    ypars = None
+    #ypars = None
     ymult = []
     yoff = []# not used
     yzero = []

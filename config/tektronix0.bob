@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>tektronix0</name>
+  <widget type="xyplot" version="3.0.0">
+    <name>X/Y Plot</name>
+    <width>550</width>
+    <height>290</height>
+    <x_axis>
+      <title>Time</title>
+      <autoscale>true</autoscale>
+      <log_scale>false</log_scale>
+      <minimum>0.0</minimum>
+      <maximum>100.0</maximum>
+      <show_grid>false</show_grid>
+      <title_font>
+        <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+        </font>
+      </title_font>
+      <scale_font>
+        <font name="Default" family="Liberation Sans" style="REGULAR" size="14.0">
+        </font>
+      </scale_font>
+      <visible>true</visible>
+    </x_axis>
+    <y_axes>
+      <y_axis>
+        <title>Diivisions</title>
+        <autoscale>false</autoscale>
+        <log_scale>false</log_scale>
+        <minimum>-5.0</minimum>
+        <maximum>5.0</maximum>
+        <show_grid>false</show_grid>
+        <title_font>
+          <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+          </font>
+        </title_font>
+        <scale_font>
+          <font name="Default" family="Liberation Sans" style="REGULAR" size="14.0">
+          </font>
+        </scale_font>
+        <on_right>false</on_right>
+        <visible>true</visible>
+        <color>
+          <color name="Text" red="0" green="0" blue="0">
+          </color>
+        </color>
+      </y_axis>
+    </y_axes>
+    <traces>
+      <trace>
+        <name>CH1</name>
+        <x_pv>pva://tektronix0:tAxis</x_pv>
+        <y_pv>pva://tektronix0:c01Waveform</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="0" green="0" blue="255">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <line_style>0</line_style>
+        <point_type>0</point_type>
+        <point_size>2</point_size>
+        <visible>true</visible>
+      </trace>
+      <trace>
+        <name>CH2</name>
+        <x_pv>pva://tektronix0:tAxis</x_pv>
+        <y_pv>pva://tektronix0:c02Waveform</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="255" green="0" blue="0">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <line_style>0</line_style>
+        <point_type>0</point_type>
+        <point_size>10</point_size>
+        <visible>true</visible>
+      </trace>
+      <trace>
+        <name>CH3</name>
+        <x_pv>pva://tektronix0:tAxis</x_pv>
+        <y_pv>pva://tektronix0:c03Waveform</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="0" green="255" blue="0">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <line_style>0</line_style>
+        <point_type>0</point_type>
+        <point_size>10</point_size>
+        <visible>true</visible>
+      </trace>
+      <trace>
+        <name>CH4</name>
+        <x_pv>pva://tektronix0:tAxis</x_pv>
+        <y_pv>pva://tektronix0:c04Waveform</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="170" green="0" blue="255">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <line_style>0</line_style>
+        <point_type>0</point_type>
+        <point_size>10</point_size>
+        <visible>true</visible>
+      </trace>
+      <trace>
+        <name>CH5</name>
+        <x_pv>pva://tektronix0:tAxis</x_pv>
+        <y_pv>pva://tektronix0:c05Waveform</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="255" green="255" blue="0">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <line_style>0</line_style>
+        <point_type>0</point_type>
+        <point_size>10</point_size>
+        <visible>true</visible>
+      </trace>
+      <trace>
+        <name>CH6</name>
+        <x_pv>pva://tektronix0:tAxis</x_pv>
+        <y_pv>pva://tektronix0:c06Waveform</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="0" green="234" blue="255">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <line_style>0</line_style>
+        <point_type>0</point_type>
+        <point_size>10</point_size>
+        <visible>true</visible>
+      </trace>
+    </traces>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>recLengthS</name>
+    <pv_name>pva://tektronix0:recLengthS</pv_name>
+    <x>560</x>
+    <y>71</y>
+    <precision>0</precision>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_1</name>
+    <text>Record length</text>
+    <x>560</x>
+    <y>50</y>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_3</name>
+    <text>Volts/div:</text>
+    <y>341</y>
+    <width>70</width>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Volts/div</name>
+    <pv_name>pva://tektronix0:c01VoltsPerDiv</pv_name>
+    <x>80</x>
+    <y>341</y>
+    <width>80</width>
+    <precision>4</precision>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Sleep</name>
+    <pv_name>pva://tektronix0:sleep</pv_name>
+    <x>560</x>
+    <y>220</y>
+    <precision>1</precision>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_4</name>
+    <text>Sleep</text>
+    <x>560</x>
+    <y>200</y>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_6</name>
+    <text>Cycle:</text>
+    <x>559</x>
+    <y>29</y>
+    <width>40</width>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>cycleTime</name>
+    <pv_name>pva://tektronix0:cycleTime</pv_name>
+    <x>560</x>
+    <y>240</y>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>Text Update_3</name>
+    <pv_name>pva://tektronix0:cycle</pv_name>
+    <x>609</x>
+    <y>29</y>
+    <width>60</width>
+    <precision>0</precision>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>Server</name>
+    <pv_name>pva://tektronix0:server</pv_name>
+    <x>559</x>
+    <height>20</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_8</name>
+    <text>Server:</text>
+    <x>500</x>
+    <width>49</width>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>recLengthR</name>
+    <pv_name>pva://tektronix0:recLengthR</pv_name>
+    <x>560</x>
+    <y>90</y>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Volts/div_1</name>
+    <pv_name>pva://tektronix0:c02VoltsPerDiv</pv_name>
+    <x>160</x>
+    <y>341</y>
+    <width>80</width>
+    <precision>4</precision>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Volts/div_2</name>
+    <pv_name>pva://tektronix0:c03VoltsPerDiv</pv_name>
+    <x>240</x>
+    <y>341</y>
+    <width>80</width>
+    <precision>4</precision>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Volts/div_3</name>
+    <pv_name>pva://tektronix0:c04VoltsPerDiv</pv_name>
+    <x>320</x>
+    <y>341</y>
+    <width>80</width>
+    <precision>4</precision>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Volts/div_4</name>
+    <pv_name>pva://tektronix0:c05VoltsPerDiv</pv_name>
+    <x>400</x>
+    <y>341</y>
+    <width>80</width>
+    <precision>4</precision>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Volts/div_5</name>
+    <pv_name>pva://tektronix0:c06VoltsPerDiv</pv_name>
+    <x>480</x>
+    <y>341</y>
+    <width>80</width>
+    <precision>4</precision>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_9</name>
+    <text>Channels:</text>
+    <y>292</y>
+    <width>70</width>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>CH1</name>
+    <text>CH1</text>
+    <x>90</x>
+    <y>292</y>
+    <width>70</width>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>CH2</name>
+    <text>CH2</text>
+    <x>160</x>
+    <y>292</y>
+    <width>70</width>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>CH4</name>
+    <text>CH4</text>
+    <x>326</x>
+    <y>292</y>
+    <width>70</width>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>CH3</name>
+    <text>CH3</text>
+    <x>240</x>
+    <y>292</y>
+    <width>70</width>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>CH6</name>
+    <text>CH6</text>
+    <x>480</x>
+    <y>292</y>
+    <width>70</width>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>CH5</name>
+    <text>CH5</text>
+    <x>410</x>
+    <y>292</y>
+    <width>70</width>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_11</name>
+    <text>On/Off:</text>
+    <y>312</y>
+    <width>70</width>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>OnOff_1</name>
+    <pv_name>pva://tektronix0:c01OnOff</pv_name>
+    <x>80</x>
+    <y>312</y>
+    <width>80</width>
+    <precision>1</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>OnOff_2</name>
+    <pv_name>pva://tektronix0:c02OnOff</pv_name>
+    <x>160</x>
+    <y>312</y>
+    <width>80</width>
+    <precision>1</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>OnOff_3</name>
+    <pv_name>pva://tektronix0:c03OnOff</pv_name>
+    <x>240</x>
+    <y>312</y>
+    <width>80</width>
+    <precision>1</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>OnOff_4</name>
+    <pv_name>pva://tektronix0:c04OnOff</pv_name>
+    <x>320</x>
+    <y>312</y>
+    <width>80</width>
+    <precision>1</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>OnOff_5</name>
+    <pv_name>pva://tektronix0:c05OnOff</pv_name>
+    <x>400</x>
+    <y>312</y>
+    <width>80</width>
+    <precision>1</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>OnOff_6</name>
+    <pv_name>pva://tektronix0:c01OnOff</pv_name>
+    <x>480</x>
+    <y>312</y>
+    <width>80</width>
+    <precision>1</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_12</name>
+    <text>Offset:</text>
+    <y>371</y>
+    <width>70</width>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Offset_1</name>
+    <pv_name>pva://tektronix0:c01VoltOffset</pv_name>
+    <x>80</x>
+    <y>371</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Offset_2</name>
+    <pv_name>pva://tektronix0:c02VoltOffset</pv_name>
+    <x>160</x>
+    <y>371</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Offset_3</name>
+    <pv_name>pva://tektronix0:c03VoltOffset</pv_name>
+    <x>240</x>
+    <y>371</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Offset_4</name>
+    <pv_name>pva://tektronix0:c04VoltOffset</pv_name>
+    <x>320</x>
+    <y>371</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Offset_5</name>
+    <pv_name>pva://tektronix0:c05VoltOffset</pv_name>
+    <x>400</x>
+    <y>371</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Offset_6</name>
+    <pv_name>pva://tektronix0:c06VoltOffset</pv_name>
+    <x>480</x>
+    <y>371</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Mean_!</name>
+    <text>Mean:</text>
+    <y>401</y>
+    <width>70</width>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Mean_1</name>
+    <pv_name>pva://tektronix0:c01Mean</pv_name>
+    <x>80</x>
+    <y>401</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Peak2Peak</name>
+    <text>Peak2Peak:</text>
+    <y>430</y>
+    <width>70</width>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Peak2Peak_1</name>
+    <pv_name>pva://tektronix0:c01Peak2Peak</pv_name>
+    <x>80</x>
+    <y>430</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Mean_2</name>
+    <pv_name>pva://tektronix0:c02Mean</pv_name>
+    <x>160</x>
+    <y>401</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Peak2Peak_2</name>
+    <pv_name>pva://tektronix0:c02Peak2Peak</pv_name>
+    <x>160</x>
+    <y>430</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Mean_3</name>
+    <pv_name>pva://tektronix0:c03Mean</pv_name>
+    <x>240</x>
+    <y>401</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Peak2Peak_3</name>
+    <pv_name>pva://tektronix0:c03Peak2Peak</pv_name>
+    <x>240</x>
+    <y>430</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Mean_4</name>
+    <pv_name>pva://tektronix0:c04Mean</pv_name>
+    <x>320</x>
+    <y>401</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Peak2Peak_4</name>
+    <pv_name>pva://tektronix0:c04Peak2Peak</pv_name>
+    <x>320</x>
+    <y>430</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Mean_5</name>
+    <pv_name>pva://tektronix0:c05Mean</pv_name>
+    <x>400</x>
+    <y>401</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Peak2Peak_5</name>
+    <pv_name>pva://tektronix0:c05Peak2Peak</pv_name>
+    <x>400</x>
+    <y>430</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Mean_6</name>
+    <pv_name>pva://tektronix0:c06Mean</pv_name>
+    <x>480</x>
+    <y>401</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>Peak2Peak_6</name>
+    <pv_name>pva://tektronix0:c06Peak2Peak</pv_name>
+    <x>480</x>
+    <y>430</y>
+    <width>80</width>
+    <precision>4</precision>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+</display>

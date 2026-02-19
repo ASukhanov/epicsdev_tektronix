@@ -1,6 +1,6 @@
 """Pypet page for oscilloscopes served by epicsdev-based server."""
 # pylint: disable=invalid-name
-__version__ = 'v1.3.2 2026-02-01'
+__version__ = 'v1.3.3 2026-02-16'# fixed title.
 print(f'epicsScope {__version__}')
 
 #``````````````````Definitions````````````````````````````````````````````````
@@ -14,7 +14,7 @@ def slider(minValue,maxValue):
     """Definition of the GUI element: horizontal slider with flexible range"""
     return {'widget':'hslider','opLimits':[minValue,maxValue],'span':[2,1]}
 
-LargeFont = {'color':'light gray', **font(16), 'fgColor':'dark green'}
+LargeFont = {'color':'light gray', **font(18), 'fgColor':'dark green'}
 ButtonFont = {'font':['Open Sans Extrabold',14]}# Comic Sans MS
 # Attributes for gray row, it should be in the first cell:
 #GrayRow = {'ATTRIBUTES':{'color':'light gray', **font(12)}}
@@ -26,22 +26,30 @@ PyPath = 'python -m'
 PaneT = 'timing[1] timing[3]'
 #``````````````````PyPage Object``````````````````````````````````````````````
 class PyPage():
-    """Pypet page for oscilloscopes served by epicsDevScope* server"""
-    def __init__(self, instance:str, title:str, channels=4):
-        """instance: unique name of the page.
-        For EPICS it is usually device prefix 
+    """Pypet page for oscilloscopes served by epicsdev-based server"""
+    def __init__(self, instance:str, title='', channels=4):
+        """Parameters
+        ----------
+        instance: str
+            The instance name of the oscilloscope, e.g. 'scope1:'. It is used to construct the PV names. 
+        title: str, optional
+            The title of the page tab. If not provided, it defaults to '{instance} Oscilloscope'.
+        channels: int, optional
+            The number of channels of the oscilloscope. Default is 4.
         """
+        if title == '':
+            title = f'{instance} Oscilloscope'
         print(f'Instantiating Page {title} for device{instance} with {channels} channels')
 
         #``````````Mandatory class members starts here````````````````````````
         self.namespace = 'PVA'
         self.title = title
 
-        #``````````Page attributes, optional`````````````````````````
+        #``````````Page attributes, optional``````````````````````````````````
         self.page = {**color(240,240,240)}# Does not work
         #self.page['editable'] = False
 
-        #``````````Definition of columns`````````````````````````````
+        #``````````Definition of columns``````````````````````````````````````
         self.columns = {
             1: {'width': 120, 'justify': 'right'},
             2: {'width': 80},
@@ -70,9 +78,9 @@ string or device:parameter and the value is dictionary of the features.
         host = '130.199.41.111'
         #scopeWWW = {'WWW':{'launch':f'firefox http://{host}/Tektronix/#/client/c/   Tek%20e*Scope',
         #    **lColor, **ButtonFont, **span(1,2)}}
-        PaneP2P = ' '.join([f'c{i+1:02d}Mean c{i+1:02}Peak2Peak' for i in range(channels)])
+        PaneP2P = ' '.join([f'c{i+1:02}Peak2Peak' for i in range(channels)])
         PaneWF = ' '.join([f'c{i+1:02}Waveform' for i in range(channels)])
-        Plot = {'Plot':{'launch':f'{PyPath} pvplot -Y-5:5 -aV:{instance} -#0"{PaneP2P}" -#1"{PaneWF}" -#2"{PaneT}"',
+        Plot = {'Plot':{'launch':f'{PyPath} pvplot -aV:{instance} -#0"{PaneP2P}" -#1"{PaneWF}" -#2"{PaneT}"',
             **lColor, **ButtonFont}}
         print(f'Plot command: {Plot}')
 
@@ -82,8 +90,7 @@ string or device:parameter and the value is dictionary of the features.
 #['State:', D+'server', 'Recall:', D+'setup',_,'verbose:',D+'verbose'],
 #['Status:', {D+'status': span(6,1)}],
 #['Polling Interval:', D+'polling',_,_,_,Plot,_],#scopeWWW],
-['Device:',D,_, D+'version', D+'host', {D+'dateTime':span(2,1)}],
-[{D+'server':LargeFont},_,'Save/Recall:',D+'setup',_,_,_],
+['Device:',D, D+'server', D+'version', 'host:',D+'host',_],
 ['Status:', {D+'status': span(8,1)}],
 ['Cycle time:',D+'cycleTime', 'Sleep:',D+'sleep', 'Cycle:',D+'cycle', Plot],
 #'', {D+'ReadSetting':
@@ -92,7 +99,7 @@ string or device:parameter and the value is dictionary of the features.
   'Acquisitions:',D+'scopeAcqCount',_], 
 ['Time/Div:', {D+'timePerDiv':span(2,1)},_,'recLength:', D+'recLengthS',
   D+'recLengthR',_],
-['SamplingRate:', {D+'samplingRate':span(2,1)},_, 'HorzMode:',D+'horzMode',_,_],
+['SamplingRate:', {D+'samplingRate':span(2,1)},_,_,_,_,_],
 #['Trigger:', D+'trigSourceS', D+'trigCouplingS', D+'trigSlopeS', 'level:', D+'trigLevelS', 'delay:', {D+'trigDelay':span(2,1)},''],
 ['Trigger state:',D+'trigState','   trigMode:',D+'trigMode',
   'TrigLevel','TrigDelay',_],
@@ -106,7 +113,6 @@ string or device:parameter and the value is dictionary of the features.
 ['On/Off:']+ChLine('OnOff'),
 #['Delay:']+ChLine('DelayFromTriggerM'),
 #['Waveform:']+ChLine('WaveforM'),
-['Mean:']+ChLine('Mean'),
 ['Peak2Peak:']+ChLine('Peak2Peak'),
 #[''],
 # ["Trigger",D+'trigSourceS',D+'trigLevelS',D+'trigSlopeS',D+'trigModeS'],
@@ -122,3 +128,4 @@ string or device:parameter and the value is dictionary of the features.
 [LYRow,'Timing:',{D+'timing':span(6,1)}],
 #[LYRow,'ActOnEvent',D+'actOnEvent','AOE_Limit',D+'aOE_Limit',_,_,_],
 ]
+
